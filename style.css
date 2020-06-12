@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
+
+:root {
+ --background-color: #c3c7ca;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    font-family: 'Lato', sans-serif;
+}
+
+
+.draggable-list {
+ width: 300px;
+ list-style: none;
+}
+
+li {
+    cursor: pointer;
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 50px;
+    border: 1px solid var(--background-color);
+    margin-bottom: 1px;
+}
+
+.number {
+    position: absolute;
+    left: 0;
+    height: 50px;
+    width: 50px;
+    background-color: var(--background-color);
+    text-align: center;
+    padding: 10px;
+    border-bottom: 1px solid #ffffff;
+    font-size: 1.5em;
+}
+
+li:nth-child(10) span {
+    border-bottom: 1px solid var(--background-color);
+}
+
+.drag {
+    position: absolute;
+    right: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 200px;
+}
+
+.fa-grip-lines {
+    position: absolute;
+    right: 15px;
+}
+
+.check-btn {
+    cursor: pointer;
+    background-color: var(--background-color);
+    padding: 10px;
+    border-style: none;
+    outline: none;
+}
+
+.check-btn:active {
+    transform: scale(0.9);
+}
