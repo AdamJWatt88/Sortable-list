@@ -1,19 +1,4 @@
-// put all names into an array X
-// forEach loop through the names array and place them inside <li> X
-// give each <li> a number ordered data-index attribute X
-// add a <span> element to each <li> with its number X
-// add drag attribute to each <div> inside <li> to make them draggable X
-// randomize list of names onload X
-// two seperate loops for the <li> tags then another to randomize the names and insert them into the created <li> X
-// possible fixes for randomized names
-    // add .filter to randomize to filter out repeat name
-// fix randomized names so as not to repeat
-// create event listeners for drag
-// data-index must match richestPeople index when placed in order
-// name must turn green when in correct order after check order button is clicked
-
-
-const list = document.getElementById('draggable-list');
+const draggable_list = document.getElementById('draggable-list');
 const checkBtn = document.getElementById('check');
 
 const richestPeople = [
@@ -30,45 +15,103 @@ const richestPeople = [
   ];
 
 // push ranomized richestPeople in this array
-const listOfPeople = [];
+const listItems = [];
 
+let dragStartIndex;
 
-// function to create DOM elements with listItem and index as parameters to be passed into listOfPeople.forEach
-function createDOM(listItem, index) {
-    const li = document.createElement('li');
-    li.innerHTML = `
-        <span class="number">${index + 1}</span>
-        <div id="drag" class="drag" draggable="true">
-          <p class="person-name">${listItem}</p>
-          <i class="fas fa-grip-lines" aria-hidden="true"></i>
-        </div>
-    
-    `;
-    li.setAttribute('data-index', index);
-    list.appendChild(li);
+createList();
+
+// Insert list items into DOM
+function createList() {
+    [...richestPeople]
+      .map(a => ({ value: a, sort: Math.random() }))
+      .sort((a, b) => a.sort - b.sort)
+      .map(a => a.value)
+      .forEach((person, index) => {
+        const listItem = document.createElement('li');
+  
+        listItem.setAttribute('data-index', index);
+  
+        listItem.innerHTML = `
+          <span class="number">${index + 1}</span>
+          <div class="draggable" draggable="true">
+            <p class="person-name">${person}</p>
+            <i class="fas fa-grip-lines"></i>
+          </div>
+        `;
+  
+        listItems.push(listItem);
+  
+        draggable_list.appendChild(listItem);
+      });
+  
+    addEventListeners();
+  }
+
+function dragStart() {
+  // console.log('Enter: ', 'dragstart')
+  dragStartIndex = +this.closest('li').getAttribute('data-index');
+} 
+
+function dragOver(e) {
+  // console.log('Enter: ', 'dragover')
+  e.preventDefault();
 }
 
-//push random person into listOfPeople array
-    // need to fix randomizer from choosing the same name twice
-    // possible fix is .filter
-    // loops only enough times as the length of richestPeople and ends after that number of times
-    // needs to loop enough times to gather all names
-richestPeople.forEach(listItem => {
-    
-        const person = richestPeople[Math.floor(Math.random() * richestPeople.length)]
+function dragDrop() {
+  // console.log('Enter: ', 'dragdrop')
+  const dragEndIndex = +this.getAttribute('data-index');
+  swapItems(dragStartIndex, dragEndIndex);
 
-        
-         if (listOfPeople.includes(listItem)) {
-            listOfPeople.slice(0, -1)
-         } else {
-             listOfPeople.push(person)
-         }
-         
-    console.log(person)
-})
+  this.classList.remove('over');
+}
 
-// loop through listOfPeople and create DOM elements
-listOfPeople.forEach( (listItem, index) => {
-    createDOM(listItem,index)
-})
+function dragEnter() {
+  // console.log('Enter: ', 'dragenter')
+  this.classList.add('over');
+}
 
+function dragLeave() {
+  // console.log('Enter: ', 'dragleave')
+  this.classList.remove('over');
+}
+
+function swapItems(fromIndex, toIndex) {
+  const itemOne = listItems[fromIndex].querySelector('.draggable');
+  const itemTwo = listItems[toIndex].querySelector('.draggable');
+
+  listItems[fromIndex].appendChild(itemTwo);
+  listItems[toIndex].appendChild(itemOne);
+}
+
+function checkOrder() {
+  listItems.forEach( (listItem, index) => {
+    const personName = listItem.querySelector('.draggable').innerText.trim();
+
+    if (personName !== richestPeople[index]) {
+      listItem.classList.add('wrong')
+    } else {
+      listItem.classList.remove('wrong');
+      listItem.classList.add('right');
+    }
+  });
+}
+
+
+function addEventListeners() {
+  const draggables = document.querySelectorAll('.draggable');
+  const dragListItems = document.querySelectorAll('.draggable-list li');
+
+  draggables.forEach( draggable => {
+    draggable.addEventListener('dragstart', dragStart);
+  });
+
+  dragListItems.forEach( item => {
+    item.addEventListener('dragover', dragOver);
+    item.addEventListener('drop', dragDrop);
+    item.addEventListener('dragenter', dragEnter);
+    item.addEventListener('dragleave', dragLeave);
+  });
+}
+
+checkBtn.addEventListener('click', checkOrder)
